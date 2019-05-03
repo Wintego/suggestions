@@ -1,0 +1,17 @@
+﻿@{
+    ViewBag.Title = "Подсказки";
+    Layout = "_Layout";
+}
+@model IEnumerable<WebApplication5.Models.Suggestion>
+
+
+    <div class="search">
+        <form method="post">
+            <input type="text" value="" id="name" name="value"/>
+            <input type="submit" value="Submit" />
+        </form>
+    </div>
+@section Scripts
+{
+    <script src="~/JavaScript.js"></script>
+}
