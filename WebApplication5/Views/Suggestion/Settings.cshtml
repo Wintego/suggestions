@@ -1,12 +1,13 @@
 ﻿@{     
-    WebApplication5.Controllers.SuggestionController s = new WebApplication5.Controllers.SuggestionController();
-    var suggestionCount = WebApplication5.Controllers.SuggestionController.suggestionCount;
+    var symbolCount = WebApplication5.Controllers.SuggestionController.SymbolCount;
+    var suggestionCount = WebApplication5.Controllers.SuggestionController.SuggestionCount;
+    
 }
-
-<form method="post">
+@model List<int>
+<form method="post">  @*asp-action="Index"*@
     <label>Количество символов</label>
-    <input type="number" min="1" value="@s.ControllerContext." name="symbolCount"/>
+    <input type="number" min="1" value="@symbolCount" name="symbolCount"/>
     <label>Количество подсказок</label>
-    <input type="number" min="0" value="@suggestionCount" name="suggestionCount"/>
+    <input type="number" min="1" value="@suggestionCount" name="suggestionCount"/>
     <input type="submit" value="OK" />
 </form>

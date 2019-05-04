@@ -9,11 +9,6 @@ namespace WebApplication5.Controllers
 {
     public class SuggestionController : Controller
     {
-        public SuggestionController()
-        {
-            suggestionCount = 3;
-            symbolCount = 1;
-        }
         static List<Suggestion> _Suggestions { get; set; } = new List<Suggestion>
         {
                 new Suggestion {Id=0, FirstName="авдокия"},
@@ -21,32 +16,44 @@ namespace WebApplication5.Controllers
                 new Suggestion {Id=2, FirstName="авдокбм"},
                 new Suggestion {Id=3, FirstName="ион"}
         };
-        public static int suggestionCount { get; set; } = 3;
-        public static int symbolCount { get; set; } = 1;
+        
         public IActionResult Index(string value)
         {
+            //не заносим в базу пустые значения
             if (value != null)
             {
                 _Suggestions.Add(new Suggestion { FirstName = value });
+                ViewBag.Last = value; //оставляем введенное значение в инпуте
             }
             return View(_Suggestions);
         }
+        public static int SuggestionCount { get; set; } = 3; //количество подсказок
+        public static int SymbolCount { get; set; } = 1; //количество символов после которых появляется подсказка
         public IActionResult Settings(int suggestionCount, int symbolCount)
-       {
-            SuggestionController.suggestionCount = suggestionCount;
-            SuggestionController.symbolCount = symbolCount;
+        {
+            //чтобы значения не перезаписывались нулями после перехода в настройки
+            if (symbolCount != 0)
+            {
+                SuggestionController.SuggestionCount = suggestionCount;
+                SuggestionController.SymbolCount = symbolCount;
+            }            
             return View();
         }
+        /// <summary>
+        /// отправляем заданное количество подсказок
+        /// </summary>
+        /// <param name="prefix">префикс подсказки</param>
+        /// <returns></returns>
         [HttpPost]
         public JsonResult Create(string prefix)
         {
-            if (prefix.Length >= symbolCount)
+            if (prefix.Length >= SymbolCount)
             {
                 var getSuggestions = from s in _Suggestions
                                      where s.FirstName.StartsWith(prefix)
                                      orderby s.FirstName ascending
                                      select s.FirstName;
-                return Json(getSuggestions.Take(suggestionCount));
+                return Json(getSuggestions.Take(SuggestionCount));
             }
             else return Json(null);
         }
