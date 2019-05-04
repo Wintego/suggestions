@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -9,23 +10,21 @@ namespace WebApplication5.Controllers
 {
     public class SuggestionController : Controller
     {
-        static List<Suggestion> _Suggestions { get; set; } = new List<Suggestion>
-        {
-                new Suggestion {Id=0, FirstName="авдокия"},
-                new Suggestion {Id=1, FirstName="авдокам"},
-                new Suggestion {Id=2, FirstName="авдокбм"},
-                new Suggestion {Id=3, FirstName="ион"}
-        };
         
         public IActionResult Index(string value)
         {
             //не заносим в базу пустые значения
             if (value != null)
             {
-                _Suggestions.Add(new Suggestion { FirstName = value });
                 ViewBag.Last = value; //оставляем введенное значение в инпуте
+                using (Context db = new Context())
+                {
+                    db.Suggestions.Add(new Suggestion { FirstName = value });
+                    db.SaveChanges();
+                    return View(db.Suggestions);
+                }
             }
-            return View(_Suggestions);
+            return View();
         }
         public static int SuggestionCount { get; set; } = 3; //количество подсказок
         public static int SymbolCount { get; set; } = 1; //количество символов после которых появляется подсказка
@@ -49,11 +48,17 @@ namespace WebApplication5.Controllers
         {
             if (prefix.Length >= SymbolCount)
             {
-                var getSuggestions = from s in _Suggestions
-                                     where s.FirstName.StartsWith(prefix)
-                                     orderby s.FirstName ascending
-                                     select s.FirstName;
-                return Json(getSuggestions.Take(SuggestionCount));
+                List<string> names = new List<string>();
+                using (Context db = new Context())
+                {
+                    var getSuggestions = from s in db.Suggestions
+                                         where s.FirstName.StartsWith(prefix)
+                                         orderby s.FirstName ascending
+                                         select s.FirstName;
+                    foreach (var item in getSuggestions.Take(SuggestionCount))
+                        names.Add(item);
+                }
+                return Json(names.Take(SuggestionCount));
             }
             else return Json(null);
         }

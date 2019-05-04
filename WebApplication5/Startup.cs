@@ -15,8 +15,8 @@ namespace WebApplication5
         public Startup(IConfiguration configuration) { }
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
-            //services.AddSingleton<WebApplication5.Controllers.SuggestionController>();
+            //SampleData.InitData();
+            services.AddMvc();                   
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
