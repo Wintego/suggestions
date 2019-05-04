@@ -48,7 +48,7 @@ namespace WebApplication5.Controllers
         {
             if (prefix.Length >= SymbolCount)
             {
-                List<string> names = new List<string>();
+                List<string> names = new List<string>(); //список с подсказками
                 using (Context db = new Context())
                 {
                     var getSuggestions = from s in db.Suggestions
@@ -58,7 +58,7 @@ namespace WebApplication5.Controllers
                     foreach (var item in getSuggestions.Take(SuggestionCount))
                         names.Add(item);
                 }
-                return Json(names.Take(SuggestionCount));
+                return Json(names);
             }
             else return Json(null);
         }
